@@ -2,6 +2,7 @@
 #define SPONGE_LIBSPONGE_BYTE_STREAM_HH
 
 #include <string>
+#include <queue>
 
 //! \brief An in-order byte stream.
 
@@ -11,7 +12,11 @@
 class ByteStream {
   private:
     // Your code here -- add private members as necessary.
-
+    std::queue<char> _que{};
+    size_t _byte_capacity = 0; //缓冲区容量
+    size_t _byte_write = 0;    //写入缓冲区的字节数
+    size_t _byte_read = 0;     //读取到的字节数
+    bool _end_input = false;      //
     // Hint: This doesn't need to be a sophisticated data structure at
     // all, but if any of your tests are taking longer than a second,
     // that's a sign that you probably want to keep exploring
@@ -23,7 +28,7 @@ class ByteStream {
     //! Construct a stream with room for `capacity` bytes.
     ByteStream(const size_t capacity);
 
-    //! \name "Input" interface for the writer
+    //! \name "Input" inte  rface for the writer
     //!@{
 
     //! Write a string of bytes into the stream. Write as many
