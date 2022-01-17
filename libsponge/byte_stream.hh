@@ -12,7 +12,7 @@
 class ByteStream {
   private:
     // Your code here -- add private members as necessary.
-    std::queue<char> _que{};
+    std::deque<char> _que{};
     size_t _byte_capacity = 0; //缓冲区容量
     size_t _byte_write = 0;    //写入缓冲区的字节数
     size_t _byte_read = 0;     //读取到的字节数

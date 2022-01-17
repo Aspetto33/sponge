@@ -1,5 +1,4 @@
 #include "socket.hh"
-#include "util.hh"
 
 #include <cstdlib>
 #include <iostream>
@@ -8,21 +7,23 @@ using namespace std;
 
 void get_URL(const string &host, const string &path) {
     // Your code here.
-    TCPSocket tcpSocket;
+    TCPSocket sock{};
 
-    tcpSocket.connect(Address(host,"http"));
+    sock.connect(Address(host,"http"));
 
-    tcpSocket.write("GET"+path+"HTTP/1.1\r\nHost:"+host+"\r\n\r\n");
+    sock.write("GET "+path+" HTTP/1.1\r\nHost: "+host+"\r\n\r\n");
 
-    //tell service not to wait
-    tcpSocket.shutdown(SHUT_WR);
+    sock.shutdown(SHUT_WR);
 
-    while(!tcpSocket.eof()){
-        cout<<tcpSocket.read();
+    while(!sock.eof()){
+        cout<<sock.read();
     }
 
+    sock.close();
 
-    tcpSocket.close();
+    return;
+
+
     // You will need to connect to the "http" service on
     // the computer whose name is in the "host" string,
     // then request the URL path given in the "path" string.
