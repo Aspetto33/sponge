@@ -15,12 +15,10 @@ ByteStream::ByteStream(const size_t capacity) { DUMMY_CODE(capacity); }
 
 size_t ByteStream::write(const string &data) {
     DUMMY_CODE(data);
-    //如果缓冲区容量为0，则可以写入的字节数为0
-    if(_byte_capacity == 0) return 0;
 
-    //选择较小的一个作为写入字节数的阈值
+    //如果写入数据字节数大于容量减去已经写入或者说是使用的字节数，令其等于容量减去写入队列的字节数
     size_t _byte_length = data.size();
-    if(_byte_length>_byte_capacity) _byte_length = _byte_capacity;
+    if(_byte_length>_byte_capacity - _que.size()) _byte_length = _byte_capacity - _que.size();
 
     //循环放入队列中
     for(size_t i = 0;i<_byte_length;i++){
@@ -39,15 +37,18 @@ string ByteStream::peek_output(const size_t len) const {
 
     size_t _lenght = len;
 
+    //如果将要读取的字节数大于缓冲池中已经存在的字节数，令其等于缓冲池中已经存在的字节数
     if(_lenght>_que.size()) _lenght = _que.size();
 
-    return string().assign(_que.begin(),_que.begin()+_lenght);
+    return std::string(_que.begin(),_que.begin()+_lenght);
 }
 
 //! \param[in] len bytes will be removed from the output side of the buffer
 void ByteStream::pop_output(const size_t len) {
     DUMMY_CODE(len);
+
     size_t _length = len;
+
     if(_length>_que.size()) _length = _que.size();
 
     for(size_t i = 0;i<len;i++) _que.pop_front();
@@ -62,13 +63,14 @@ void ByteStream::pop_output(const size_t len) {
 std::string ByteStream::read(const size_t len) {
     DUMMY_CODE(len);
 
-    string res = "";
+    size_t _length = len;
+    if(_length>_que.size()) _length = _que.size();
 
-    for(size_t i = 0;i<len;i++){
-        res += _que.front();
-        _que.pop_front();
-    }
-    return res;
+    std::string result(_que.begin(),_que.begin()+_length);
+
+    pop_output(_length);
+
+    return result;
 }
 
 void ByteStream::end_input() {
@@ -84,8 +86,7 @@ size_t ByteStream::buffer_size() const {
 }
 
 bool ByteStream::buffer_empty() const {
-    if(_que.empty()) return true;
-    return false;
+    return _que.empty();
 }
 
 bool ByteStream::eof() const {
